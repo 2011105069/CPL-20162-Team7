@@ -25,7 +25,25 @@ ImgSaveDir = Config.get('Option', 'Received_Image_Directory')
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 #Bind the socket to the port
 s_addr = ('localhost', int(Port))
-print('start up on %s port %s' %s_adr)
-sock.bind
+print('start up on %s port %s' %s_addr)
+sock.bind(s_addr)
+
+sock.listen(1)
+
+
+while True:
+	print('wating for connection')
+	connection, c_addr = sock.accept()
+
+	try:
+		print('connection from %s', c_addr)
+
+		f=open(
+
+		while True:
+			data = connection.recv(16)
+
+			if data:
+				
 
 
