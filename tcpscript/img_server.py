@@ -68,12 +68,15 @@ while True:
 		print('connection from %s', c_addr)
 
 		f=open(fname, 'wb+')
-
-		while True:
+		flen = int(connection.recv(32))
+		rlen =0
+		print('flen is ' + str(flen))
+		while rlen <= flen:
 			data = connection.recv(16)
 
 			if data:
 				f.write(data)
+				rlen+=16
 			else:
 				print('img save done ')
 				break
@@ -87,9 +90,6 @@ while True:
 				fname = fname + '.' + imgtype
 				print('file name is %s' %fname)
 		f.close()
-		print('here')
-		connection.sendall(fname)
-		print('here')
 
 		thread.start_new_thread(label_image, (fname,connection, c_addr, ))
 
