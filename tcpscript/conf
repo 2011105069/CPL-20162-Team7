@@ -1,4 +1,4 @@
 [Option]
 Port: 306
-Lab_script_Directory: /tf_files/label_image.py
+Lab_Script: /tf_files/label_image.py
 Received_Image_Directory: /home/swkim306/Desktop/

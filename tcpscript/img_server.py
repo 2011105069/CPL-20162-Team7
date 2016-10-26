@@ -1,16 +1,37 @@
-import ConfigParser
-import argparse
 import sys
 import socket
-import imghdr
 import os
+import thread
 
-#Argument parsing
+import imghdr
+import ConfigParser
+import argparse
+import subprocess
+
+def label_image(img, connection, c_addr):
+	#call lab_image.py
+	print(LabScript + ' ' + img)
+	batcmd = 'sudo python ' + LabScript + ' ' + img
+	result = subprocess.check_output(batcmd, shell=True)
+	print('--------------')
+	#print(result)
+	res = result.split('(')[0]
+	s = result.split('=')[1]
+	s = s.split(')')[0]
+	res += s
+	res = res.replace('  ',' ')
+	print(res)
+	connection.send(res)
+
+	connection.close()
+	
+
+#parse argument (config file).
 parser = argparse.ArgumentParser()
 parser.add_argument("-c", "--conf", help="location of conf file", type=str)
 args = parser.parse_args()
 
-#Config file parsing
+#parse config file.
 Config = ConfigParser.ConfigParser()
 if args.conf:
 	Config.read(args.conf)
@@ -20,27 +41,33 @@ else :
 	sys.exit()
 
 Port = Config.get('Option', 'Port')
-LabDir = Config.get('Option', 'Lab_script_Directory')
+LabScript = Config.get('Option', 'Lab_Script')
 ImgSaveDir = Config.get('Option', 'Received_Image_Directory')
-#ImgSaveDir= ImgSaveDir+'tmp'
 
-#Create a TCP/IP socket
+#create a tcp/ip socket.
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#Bind the socket to the port
+
+
+#bind the socket to the port
 s_addr = ('localhost', int(Port))
 print('start up on %s port %s' %s_addr)
 sock.bind(s_addr)
-
 sock.listen(1)
+
 
 while True:
 	print('wating for connection')
 	connection, c_addr = sock.accept()
+	#make img file name.
+	cn = str(connection).replace(' ','_')
+	cn = cn.replace('<','')
+	cn = cn.replace('>','')
+	fname = ImgSaveDir + cn
 
 	try:
 		print('connection from %s', c_addr)
 
-		f=open(ImgSaveDir+'tmp', 'wb+')
+		f=open(fname, 'wb+')
 
 		while True:
 			data = connection.recv(16)
@@ -50,13 +77,24 @@ while True:
 			else:
 				print('img save done ')
 				break
+				
 	finally:
-		imgtype = imghdr.what(ImgSaveDir+'tmp')
+		#detect img file type, using imghdr.
+		imgtype = imghdr.what(fname)
 		for filename in os.listdir(ImgSaveDir):
-			if filename.startswith('tmp'):
-				print('file name is ' + filename)
-				os.rename(ImgSaveDir + filename, ImgSaveDir+filename+'.'+imgtype)
+			if filename.startswith(cn):
+				os.rename(ImgSaveDir + filename, fname+'.'+imgtype)
+				fname = fname + '.' + imgtype
+				print('file name is %s' %fname)
 		f.close()
-		connection.close()
+		print('here')
+		connection.sendall(fname)
+		print('here')
+
+		thread.start_new_thread(label_image, (fname,connection, c_addr, ))
+
+		
+
+
 
 
