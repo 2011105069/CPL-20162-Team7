@@ -2,6 +2,8 @@ import ConfigParser
 import argparse
 import sys
 import socket
+import imghdr
+import os
 
 #Argument parsing
 parser = argparse.ArgumentParser()
@@ -20,6 +22,7 @@ else :
 Port = Config.get('Option', 'Port')
 LabDir = Config.get('Option', 'Lab_script_Directory')
 ImgSaveDir = Config.get('Option', 'Received_Image_Directory')
+#ImgSaveDir= ImgSaveDir+'tmp'
 
 #Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -30,7 +33,6 @@ sock.bind(s_addr)
 
 sock.listen(1)
 
-
 while True:
 	print('wating for connection')
 	connection, c_addr = sock.accept()
@@ -38,12 +40,23 @@ while True:
 	try:
 		print('connection from %s', c_addr)
 
-		f=open(
+		f=open(ImgSaveDir+'tmp', 'wb+')
 
 		while True:
 			data = connection.recv(16)
 
 			if data:
-				
+				f.write(data)
+			else:
+				print('img save done ')
+				break
+	finally:
+		imgtype = imghdr.what(ImgSaveDir+'tmp')
+		for filename in os.listdir(ImgSaveDir):
+			if filename.startswith('tmp'):
+				print('file name is ' + filename)
+				os.rename(ImgSaveDir + filename, ImgSaveDir+filename+'.'+imgtype)
+		f.close()
+		connection.close()
 
 
