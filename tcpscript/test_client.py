@@ -8,7 +8,7 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s_addr = ('localhost', 306)
 sock.connect(s_addr)
 
-sock.setblocking(0)
+#sock.setblocking(0)
 
 #send image to server.
 fname = '/home/swkim306/Downloads/isthischick.jpg'
@@ -37,6 +37,7 @@ while not res:
 		print(rec)
 	except IOError as e:
 		if e.errno == errno.EWOULDBLOCK:
+			print('ii')
                 	pass
 	finally:
 		pass
