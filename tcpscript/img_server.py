@@ -71,7 +71,7 @@ while True:
 		flen = int(connection.recv(32))
 		rlen =0
 		print('flen is ' + str(flen))
-		while rlen <= flen:
+		while rlen < flen:
 			data = connection.recv(16)
 
 			if data:
