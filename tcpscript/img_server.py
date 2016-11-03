@@ -14,13 +14,13 @@ def label_image(img, connection, c_addr):
 	batcmd = 'sudo python ' + LabScript + ' ' + img
 	result = subprocess.check_output(batcmd, shell=True)
 	print('--------------')
-	#print(result)
+	print(result)
 	res = result.split('(')[0]
 	s = result.split('=')[1]
 	s = s.split(')')[0]
 	res += s
 	res = res.replace('  ',' ')
-	print(res)
+	#print(res)
 	connection.send(res)
 
 	connection.close()
