@@ -11,7 +11,7 @@ sock.connect(s_addr)
 #sock.setblocking(0)
 
 #send image to server.
-fname = '/home/swkim306/Downloads/isthischick.jpg'
+fname = '/home/swkim306/Pictures/todaysand.jpg'
 flen = os.path.getsize(fname)
 sock.send(str(flen))
 print(flen)
