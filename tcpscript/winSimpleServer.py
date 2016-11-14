@@ -19,7 +19,7 @@ while True:
 	#make img file name.
 
 	try:
-		print('connection from', c_addr)
+		print('connection from %s %s' %c_addr)
 
 		while True:
 			data = connection.recv(20)
