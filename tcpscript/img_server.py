@@ -8,6 +8,9 @@ import ConfigParser
 import argparse
 import subprocess
 
+import pymysql
+
+
 def label_image(img, connection, c_addr):
 	#call lab_image.py
 	print(LabScript + ' ' + img)
@@ -24,7 +27,66 @@ def label_image(img, connection, c_addr):
 	connection.send(res)
 
 	connection.close()
+
+
+def picture_recognizer():
+
+
+	pass
+
 	
+
+def client_handler(connection, c_addr):
+
+	#TODO 11/15 ##### howto Receive string message(?) connection.recv() to string so idendify request string. #######
+	##### implementation while loop for request parser ###########
+
+	#req = str(connection.recv(32))
+
+	#make img file name.
+	cn = str(connection).replace(' ','_')
+	cn = cn.replace('<','')
+	cn = cn.replace('>','')
+	fname = ImgSaveDir + cn
+	rlen =0
+	try:
+		print('connection from %s', c_addr)
+
+		f=open(fname, 'wb+')
+
+		flen = int(connection.recv(32))
+		print('flen is ' + str(flen))		
+
+		while rlen < flen:
+			data = connection.recv(1024)
+
+
+			if len(data):
+				f.write(data)
+				rlen+=len(data)
+
+			else:
+				print(str(rlen))
+				print('img save done ')
+				
+	finally:
+		print(str(rlen))
+		#detect img file type, using imghdr.
+		imgtype = imghdr.what(fname)
+		for filename in os.listdir(ImgSaveDir):
+			if filename.startswith(cn):
+				os.rename(ImgSaveDir + filename, fname+'.'+ imgtype)
+				fname = fname + '.' + imgtype
+				print('file name is %s' %fname)
+		f.close()
+		connection.close()
+		print('connection closed')
+
+		thread.start_new_thread(label_image, (fname,connection, c_addr, ))
+
+
+
+
 
 #parse argument (config file).
 parser = argparse.ArgumentParser()
@@ -54,46 +116,9 @@ print('start up on %s port %s' %s_addr)
 sock.bind(s_addr)
 sock.listen(1)
 
-
 while True:
 	print('wating for connection')
 	connection, c_addr = sock.accept()
-	#make img file name.
-	cn = str(connection).replace(' ','_')
-	cn = cn.replace('<','')
-	cn = cn.replace('>','')
-	fname = ImgSaveDir + cn
 
-	try:
-		print('connection from %s', c_addr)
-
-		f=open(fname, 'wb+')
-		flen = int(connection.recv(32))
-		rlen =0
-		print('flen is ' + str(flen))
-
-#		while True:
-		while rlen < flen:
-			data = connection.recv(16)
-			print('recv in')
-
-			if data:
-				f.write(data)
-				rlen+=16
-			else:
-				print('img save done ')
-				break
-				
-	finally:
-		#detect img file type, using imghdr.
-		imgtype = imghdr.what(fname)
-		for filename in os.listdir(ImgSaveDir):
-			if filename.startswith(cn):
-				print('type is ')
-				print(type(imgtype))
-				#os.rename(ImgSaveDir + filename, fname+'.'+ imgtype)
-				#fname = fname + '.' + imgtype
-				print('file name is %s' %fname)
-		f.close()
-
-		#thread.start_new_thread(label_image, (fname,connection, c_addr, ))
+	thread.start_new_thread(client_handler,(connection, c_addr, ))
+	print('????????????')
