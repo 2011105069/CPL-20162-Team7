@@ -24,24 +24,18 @@ def label_image(img, connection, c_addr):
 	res += s
 	res = res.replace('  ',' ')
 	#print(res)
-	connection.send(res)
-
-	connection.close()
-
-
-def picture_recognizer():
+	#connection.send(res)
+	#connection.close()
 
 
+#TODO 1118: register, login, databse connection.
+def register_(connection, req):
 	pass
 
-	
+def login_(connection, req)
 
-def client_handler(connection, c_addr):
 
-	#TODO 11/15 ##### howto Receive string message(?) connection.recv() to string so idendify request string. #######
-	##### implementation while loop for request parser ###########
-
-	#req = str(connection.recv(32))
+def picture_(connection,req):
 
 	#make img file name.
 	cn = str(connection).replace(' ','_')
@@ -49,17 +43,16 @@ def client_handler(connection, c_addr):
 	cn = cn.replace('>','')
 	fname = ImgSaveDir + cn
 	rlen =0
+
+	f=open(fname, 'wb+')
+
 	try:
-		print('connection from %s', c_addr)
-
-		f=open(fname, 'wb+')
-
-		flen = int(connection.recv(32))
+		print('come in pictrue')
+		flen = int(req.split('_')[0])
 		print('flen is ' + str(flen))		
 
 		while rlen < flen:
 			data = connection.recv(1024)
-
 
 			if len(data):
 				f.write(data)
@@ -68,6 +61,9 @@ def client_handler(connection, c_addr):
 			else:
 				print(str(rlen))
 				print('img save done ')
+	except:
+		e = sys.exc_info()[0]
+		print(e)
 				
 	finally:
 		print(str(rlen))
@@ -79,14 +75,40 @@ def client_handler(connection, c_addr):
 				fname = fname + '.' + imgtype
 				print('file name is %s' %fname)
 		f.close()
-		connection.close()
-		print('connection closed')
-
+		#connection.close()
+		#print('connection closed')
 		thread.start_new_thread(label_image, (fname,connection, c_addr, ))
 
 
 
+def client_handler(connection):
 
+	#TODO 11/15 ##### howto Receive string message(?) connection.recv() to string so idendify request string. #######
+	##### implementation while loop for request parser ###########
+	while(True):
+		try:
+			
+			req= str.decode(connection.recv(1024))
+			print(req)
+			rqn=req.split('_')[0]
+			req=req.split('_')[1]
+
+			if(rqn=='REGISTER'):
+				pass
+			elif(rqn=='LOGIN'):
+				pass
+			elif(rqn=='PICTURE'):
+				print('picture start')
+				thread.start_new_thread(picture_,(connection, req))
+		except:
+			e = sys.exc_info()[0]
+			print(e)
+			break;
+
+		finally:
+			pass
+
+	
 
 #parse argument (config file).
 parser = argparse.ArgumentParser()
@@ -102,6 +124,7 @@ else :
 	print("no configure file")
 	sys.exit()
 
+Sadr = Config.get('Option', 'Sadr')
 Port = Config.get('Option', 'Port')
 LabScript = Config.get('Option', 'Lab_Script')
 ImgSaveDir = Config.get('Option', 'Received_Image_Directory')
@@ -111,7 +134,7 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 
 #bind the socket to the port
-s_addr = ('192.168.111.128', int(Port))
+s_addr = (Sadr, int(Port))
 print('start up on %s port %s' %s_addr)
 sock.bind(s_addr)
 sock.listen(1)
@@ -119,6 +142,6 @@ sock.listen(1)
 while True:
 	print('wating for connection')
 	connection, c_addr = sock.accept()
+	print('connection from %s', c_addr)
 
-	thread.start_new_thread(client_handler,(connection, c_addr, ))
-	print('????????????')
+	thread.start_new_thread(client_handler,(connection, ))
