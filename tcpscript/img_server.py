@@ -9,6 +9,10 @@ import argparse
 import subprocess
 
 import pymysql
+import re
+
+conn = pymysql.connect(host='localhost', user='skim', password='tjddnr', db='test_database', charset = 'utf8')
+curs = conn.cursor()
 
 
 def label_image(img, connection, c_addr):
@@ -30,9 +34,14 @@ def label_image(img, connection, c_addr):
 
 #TODO 1118: register, login, databse connection.
 def register_(connection, req):
+	print('regisger came')
+	print(req)
+	
+	#sql = 'insert into member_info (uid,u_name,sex,birth_year,gid) vaules('
 	pass
 
-def login_(connection, req)
+def login_(connection, req):
+	pass
 
 
 def picture_(connection,req):
@@ -48,7 +57,7 @@ def picture_(connection,req):
 
 	try:
 		print('come in pictrue')
-		flen = int(req.split('_')[0])
+		flen = int(req[1])
 		print('flen is ' + str(flen))		
 
 		while rlen < flen:
@@ -85,28 +94,30 @@ def client_handler(connection):
 
 	#TODO 11/15 ##### howto Receive string message(?) connection.recv() to string so idendify request string. #######
 	##### implementation while loop for request parser ###########
-	while(True):
-		try:
-			
-			req= str.decode(connection.recv(1024))
-			print(req)
-			rqn=req.split('_')[0]
-			req=req.split('_')[1]
 
-			if(rqn=='REGISTER'):
-				pass
-			elif(rqn=='LOGIN'):
-				pass
-			elif(rqn=='PICTURE'):
-				print('picture start')
-				thread.start_new_thread(picture_,(connection, req))
-		except:
-			e = sys.exc_info()[0]
-			print(e)
-			break;
+	#this while loop necessary?
 
-		finally:
+	try:
+		
+		req= str.decode(connection.recv(1024))
+		print(req)
+		req=req.split('_')
+		rqn = req[0]
+
+		if(rqn=='REGISTER'):
+			thread.start_new_thread(register_,(connection, req))
 			pass
+		elif(rqn=='LOGIN'):
+			pass
+		elif(rqn=='PICTURE'):
+			print('picture start')
+			thread.start_new_thread(picture_,(connection, req))
+	except:
+		e = sys.exc_info()[0]
+		print(e)
+
+	finally:
+		pass
 
 	
 
