@@ -11,8 +11,62 @@ import subprocess
 import pymysql
 import re
 
-conn = pymysql.connect(host='localhost', user='skim', password='tjddnr', db='test_database', charset = 'utf8')
+#parse argument (config file).
+parser = argparse.ArgumentParser()
+parser.add_argument("-c", "--conf", help="location of conf file", type=str)
+args = parser.parse_args()
+
+#parse config file.
+Config = ConfigParser.ConfigParser()
+if args.conf:
+	Config.read(args.conf)
+
+else :
+	print("no configure file")
+	sys.exit()
+
+Sadr = Config.get('Option', 'Sadr')
+Port = Config.get('Option', 'Port')
+LabScript = Config.get('Option', 'Lab_Script')
+ImgSaveDir = Config.get('Option', 'Received_Image_Directory')
+dbname =  Config.get('Option', 'dbname')
+dbuname = Config.get('Option', 'dbuname')
+dbpass = Config.get('Option', 'dbpass')
+
+conn = pymysql.connect(host='localhost', user=dbuname, password=dbpass, db=dbname, charset = 'utf8')
 curs = conn.cursor()
+
+
+def insert(table,req):
+
+	colnval = '(uid,u_name,sex,birth_year,gid) values(\"'+str(req[1])+'\", \"'+str(req[2])+'\", \''+str(req[3])+'\', '+str(req[4])+', '+str(req[5])+')'
+	sql = "insert into " + table + " " + colnval
+	print('sql is')
+	print(sql)
+	curs.execute(sql)
+	conn.commit()
+
+
+	pass
+
+def history_(connection, req):
+	tex ='hi im seven\n'
+	connection.send(str.encode(tex))
+	print('sending done history')
+	pass
+
+
+#TODO 1118: register, login, databse connection.
+def register_(connection, req):
+	print('regisger came')
+	insert('member_info', req)
+	print(req)
+
+	#sql = 'insert into member_info (uid,u_name,sex,birth_year,gid) vaules('
+	pass
+
+def login_(connection, req):
+	pass
 
 
 def label_image(img, connection, c_addr):
@@ -31,21 +85,7 @@ def label_image(img, connection, c_addr):
 	#connection.send(res)
 	#connection.close()
 
-
-#TODO 1118: register, login, databse connection.
-def register_(connection, req):
-	print('regisger came')
-	print(req)
-	
-	#sql = 'insert into member_info (uid,u_name,sex,birth_year,gid) vaules('
-	pass
-
-def login_(connection, req):
-	pass
-
-
 def picture_(connection,req):
-
 	#make img file name.
 	cn = str(connection).replace(' ','_')
 	cn = cn.replace('<','')
@@ -89,7 +129,6 @@ def picture_(connection,req):
 		thread.start_new_thread(label_image, (fname,connection, c_addr, ))
 
 
-
 def client_handler(connection):
 
 	#TODO 11/15 ##### howto Receive string message(?) connection.recv() to string so idendify request string. #######
@@ -112,6 +151,10 @@ def client_handler(connection):
 		elif(rqn=='PICTURE'):
 			print('picture start')
 			thread.start_new_thread(picture_,(connection, req))
+		elif(rqn=='HISTORY'):
+			print('history start')
+			thread.start_new_thread(history_,(connection, req))
+
 	except:
 		e = sys.exc_info()[0]
 		print(e)
@@ -121,24 +164,7 @@ def client_handler(connection):
 
 	
 
-#parse argument (config file).
-parser = argparse.ArgumentParser()
-parser.add_argument("-c", "--conf", help="location of conf file", type=str)
-args = parser.parse_args()
 
-#parse config file.
-Config = ConfigParser.ConfigParser()
-if args.conf:
-	Config.read(args.conf)
-
-else :
-	print("no configure file")
-	sys.exit()
-
-Sadr = Config.get('Option', 'Sadr')
-Port = Config.get('Option', 'Port')
-LabScript = Config.get('Option', 'Lab_Script')
-ImgSaveDir = Config.get('Option', 'Received_Image_Directory')
 
 #create a tcp/ip socket.
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
