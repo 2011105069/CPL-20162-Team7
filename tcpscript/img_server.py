@@ -1,7 +1,9 @@
+from __future__ import print_function
 import sys
 import socket
 import os
 import thread
+import time
 
 import imghdr
 import ConfigParser
@@ -39,14 +41,23 @@ curs = conn.cursor()
 
 
 def insert(table,req):
+	print('here insert')
+	print(req)
 
-	colnval = '(uid,u_name,sex,birth_year,gid) values(\"'+str(req[1])+'\", \"'+str(req[2])+'\", \''+str(req[3])+'\', '+str(req[4])+', '+str(req[5])+')'
+	if(str(req[0])=='REGISTER'):
+		colnval = '(uid,u_name,sex,birth_year,gid) values(\"'+str(req[1])+'\", \"'+str(req[2])+'\", \''+str(req[3])+'\', '+str(req[4])+', '+str(req[5])+')'
+	elif(str(req[0])=='PICTURE'):
+		ss=time.strftime("%Y%m%d")
+		print(ss)
+		colnval = 'values('+ss+ ',\"'+str(req[2])+'\",\"' +str(req[4])+ '\",'+str(req[3]) +')'
+
+
 	sql = "insert into " + table + " " + colnval
-	print('sql is')
 	print(sql)
+	
+	
 	curs.execute(sql)
 	conn.commit()
-
 
 	pass
 
@@ -59,18 +70,27 @@ def history_(connection, req):
 
 #TODO 1118: register, login, databse connection.
 def register_(connection, req):
-	print('regisger came')
 	insert('member_info', req)
-	print(req)
+	sql= "select * from member_info"
+	curs.execute(sql)
+	rows = curs.fetchall()
+
+	for i in rows:
+		print(i)
+
+	print('register : '+ str(req[1]) + ' success')
 
 	#sql = 'insert into member_info (uid,u_name,sex,birth_year,gid) vaules('
 	pass
 
 def login_(connection, req):
+	#nothing todo yet
+	print("login success")
+	print('id : ' + str(req[1]))
 	pass
 
 
-def label_image(img, connection, c_addr):
+def label_image(img, connection, c_addr, req):
 	#call lab_image.py
 	print(LabScript + ' ' + img)
 	batcmd = 'sudo python ' + LabScript + ' ' + img
@@ -81,10 +101,20 @@ def label_image(img, connection, c_addr):
 	s = result.split('=')[1]
 	s = s.split(')')[0]
 	res += s
-	res = res.replace('  ',' ')
-	#print(res)
-	#connection.send(res)
-	#connection.close()
+	res = res.replace('  ','-')
+	food = res.split('-')[0]
+
+	print('Result is : ' +str(res))
+	res = 'result_'+str(res)+'_'
+	connection.send(str.encode(res))
+	connection.close()
+
+	#bad coding.
+	req[4]=food
+
+	insert("history",req)
+
+	pass
 
 def picture_(connection,req):
 	#make img file name.
@@ -127,7 +157,7 @@ def picture_(connection,req):
 		f.close()
 		#connection.close()
 		#print('connection closed')
-		thread.start_new_thread(label_image, (fname,connection, c_addr, ))
+		thread.start_new_thread(label_image, (fname,connection, c_addr,req, ))
 
 
 def app_handler(connection):
@@ -150,6 +180,7 @@ def app_handler(connection):
 			thread.start_new_thread(register_,(connection, req))
 			pass
 		elif(rqn=='LOGIN'):
+			thread.start_new_thread(login_,(connection, req))
 			pass
 		elif(rqn=='PICTURE'):
 			print('picture start')
@@ -198,8 +229,8 @@ def rasp_handler(connection):
 
 def rasp_history():
 	sql= "select * from "
-
-	pass
+	'''
+	while()
 		sql = "select * from history where uid=\"hean12340302\" order by date desc"
 		curs.execute(sql)
 		rows = curs.fetchall()
@@ -247,8 +278,9 @@ def rasp_history():
 				print('_', end='')
 
 			d+=1
-		
+			'''
 
+		
 
 
 #create a tcp/ip socket.
@@ -266,9 +298,14 @@ while True:
 	connection, c_addr = sock.accept()
 	print('connection from %s', c_addr)
 
+	print('waiting for first string')
 	cl = str.decode(connection.recv(1024))
-	if(cl=='APP_'):
+	cl = str(cl)
+	cl=cl.split('_')[0]
+	
+	if(cl=='APP'):
 		thread.start_new_thread(app_handler,(connection, ))
-	elif(cl=='RASP_'):
+		print('app started')
+	elif(cl=='RASP'):
 		print('rasp came')
 		thread.start_new_thread(rasp_handler,(connection, ))
