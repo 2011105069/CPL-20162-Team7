@@ -33,6 +33,7 @@ dbname =  Config.get('Option', 'dbname')
 dbuname = Config.get('Option', 'dbuname')
 dbpass = Config.get('Option', 'dbpass')
 
+#database.
 conn = pymysql.connect(host='localhost', user=dbuname, password=dbpass, db=dbname, charset = 'utf8')
 curs = conn.cursor()
 
@@ -129,7 +130,7 @@ def picture_(connection,req):
 		thread.start_new_thread(label_image, (fname,connection, c_addr, ))
 
 
-def client_handler(connection):
+def app_handler(connection):
 
 	#TODO 11/15 ##### howto Receive string message(?) connection.recv() to string so idendify request string. #######
 	##### implementation while loop for request parser ###########
@@ -138,6 +139,8 @@ def client_handler(connection):
 
 	try:
 		
+		connection.send(str.encode("OK_"))
+
 		req= str.decode(connection.recv(1024))
 		print(req)
 		req=req.split('_')
@@ -162,6 +165,53 @@ def client_handler(connection):
 	finally:
 		pass
 
+def rasp_login(connection, req):
+	print(req)
+	#gid = 
+
+	# sql = "select uid, u_name,sex, birth_year  from member_info where gid;"
+	# print('sql is')
+	# print(sql)
+	# curs.execute(sql)
+	# rows = curs.fetchall()
+	pass
+
+
+def rasp_handler(connection):
+	try:
+		
+		connection.send(str.encode("OK_"))
+
+		req= str.decode(connection.recv(1024))
+		print(req)
+		req=req.split('_')
+		rqn = req[0]
+
+		if(rqn=='LOGIN'):
+			print('rasp login')
+			rasp_login(connection, req)
+
+
+	except:
+		pass
+
+
+
+
+
+
+def rasp_history():
+
+	sql = "select * from history where uid=\"hean12340302\" order by date desc"
+	curs.execute(sql)
+	rows = curs.fetchall()
+
+
+	sql = "select uid,date,history.d_name,unit,calorie,carbohydrate,protein,fat,fiber,vita_c,ca,na,fe from history join nutri_info where history.d_name=nutri_info.d_name;"
+	print('sql is')
+	print(sql) 
+	curs.execute(sql)
+	rows = curs.fetchall()
 	
 
 
@@ -181,4 +231,9 @@ while True:
 	connection, c_addr = sock.accept()
 	print('connection from %s', c_addr)
 
-	thread.start_new_thread(client_handler,(connection, ))
+	cl = str.decode(connection.recv(1024))
+	if(cl=='APP_'):
+		thread.start_new_thread(app_handler,(connection, ))
+	elif(cl=='RASP_'):
+		print('rasp came')
+		thread.start_new_thread(rasp_handler,(connection, ))
