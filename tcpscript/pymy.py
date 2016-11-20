@@ -2,7 +2,6 @@ from __future__ import print_function
 import pymysql
 import sys
 
-
 conn = pymysql.connect(host='localhost', user='skim', password='tjddnr', db='test_database', charset = 'utf8')
 
 curs = conn.cursor()
