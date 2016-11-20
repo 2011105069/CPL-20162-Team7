@@ -42,13 +42,13 @@ curs = conn.cursor()
 
 def insert(table,req):
 	print('here insert')
-	print(req)
+	#print(req)
 
 	if(str(req[0])=='REGISTER'):
 		colnval = '(uid,u_name,sex,birth_year,gid) values(\"'+str(req[1])+'\", \"'+str(req[2])+'\", \''+str(req[3])+'\', '+str(req[4])+', '+str(req[5])+')'
 	elif(str(req[0])=='PICTURE'):
 		ss=time.strftime("%Y%m%d")
-		print(ss)
+		#print(ss)
 		colnval = 'values('+ss+ ',\"'+str(req[2])+'\",\"' +str(req[4])+ '\",'+str(req[3]) +')'
 
 
@@ -63,8 +63,78 @@ def insert(table,req):
 
 def history_(connection, req):
 	tex ='hi im seven\n'
-	connection.send(str.encode(tex))
-	print('sending done history')
+	#connection.send(str.encode(tex))
+
+	#print('sending done history')
+
+	req[1]='swkim306'
+
+	sql = "select * from history where uid=\""+str(req[1])+ "\" order by date desc"
+
+	curs.execute(sql)
+	rows = curs.fetchall()
+	#print(rows)
+
+	d=0
+	xx=len(rows)
+	#print(len(rows))
+
+	#print(rows[1])
+	d=1
+	date=str(unicode(rows[d][0]))
+
+	res=str()
+
+	while(d<xx):
+		# print(rows[d])
+		# print(str(unicode(rows[0][0])))
+		# print(str(rows[0][1]))
+		# print(str(rows[0][2]))
+		# print(str(rows[0][3]))
+
+		date=str(unicode(rows[d][0]))
+		uid=str(rows[d][1])
+		foodname=str(rows[d][2])
+		quant =float(rows[d][3])
+		u='_'
+
+		sql = "select calorie,carbohydrate,protein,fat,fiber,vita_c,ca,na,fe from nutri_info where d_name=\""+foodname+"\""
+		curs.execute(sql)
+		rows2 = curs.fetchall()
+		irows=list()
+
+		for i in rows2[0]:
+			irows.append(float(i))
+
+
+		mrows=list()
+		for i in irows:
+			mrows.append(i*float("{0:.2f}".format(quant)))
+
+		#print(uid+u+date+u+foodname+u+str(quant)+u,end='')
+
+
+		for i in mrows:
+			#print(str(i), end='')
+			#print('_', end='')
+			res+= str(i) +'_'
+
+		res+='#'
+		d+=1
+
+	#print(res)
+	#print(str.encode(res))
+	slen = str(len(res)) +'_'
+	print('slen is ' + slen)
+	connection.send(str.encode(slen))
+
+	connection.recv(100)
+	
+	sent =connection.send(str.encode(res))
+	#print(len(res))
+	#print(sent)
+	print('send history done')
+
 	pass
 
 
@@ -90,7 +160,7 @@ def login_(connection, req):
 	pass
 
 
-def label_image(img, connection, c_addr, req):
+def label_image(img, connection, req):
 	#call lab_image.py
 	print(LabScript + ' ' + img)
 	batcmd = 'sudo python ' + LabScript + ' ' + img
@@ -127,7 +197,7 @@ def picture_(connection,req):
 	f=open(fname, 'wb+')
 
 	try:
-		print('come in pictrue')
+		#print('come in pictrue')
 		flen = int(req[1])
 		print('flen is ' + str(flen))		
 
@@ -146,7 +216,7 @@ def picture_(connection,req):
 		print(e)
 				
 	finally:
-		print(str(rlen))
+		#print(str(rlen))
 		#detect img file type, using imghdr.
 		imgtype = imghdr.what(fname)
 		for filename in os.listdir(ImgSaveDir):
@@ -157,7 +227,7 @@ def picture_(connection,req):
 		f.close()
 		#connection.close()
 		#print('connection closed')
-		thread.start_new_thread(label_image, (fname,connection, c_addr,req, ))
+		thread.start_new_thread(label_image, (fname,connection, req, ))
 
 
 def app_handler(connection):
@@ -169,7 +239,7 @@ def app_handler(connection):
 
 	try:
 		
-		connection.send(str.encode("OK_"))
+		connection.send(str.encode("OK_\n\n"))
 
 		req= str.decode(connection.recv(1024))
 		print(req)
@@ -282,30 +352,37 @@ def rasp_history():
 
 		
 
+def main():
+	#create a tcp/ip socket.
+	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-#create a tcp/ip socket.
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+	#bind the socket to the port
+	s_addr = (Sadr, int(Port))
+	print('start up on %s port %s' %s_addr)
+	sock.bind(s_addr)
+	sock.listen(1)
 
-#bind the socket to the port
-s_addr = (Sadr, int(Port))
-print('start up on %s port %s' %s_addr)
-sock.bind(s_addr)
-sock.listen(1)
+	flag=1
 
-while True:
-	print('wating for connection')
-	connection, c_addr = sock.accept()
-	print('connection from %s', c_addr)
+	while True:
+		if(flag==1):
+			print('wating for connection')
+		connection, c_addr = sock.accept()
+		if(flag==1):
+			print('connection from %s', c_addr)
+		
+		cl = str.decode(connection.recv(1024))
+		cl = str(cl)
+		cl=cl.split('_')[0]
+		
+		if(cl=='APP'):
+			thread.start_new_thread(app_handler,(connection, ))
+			if(flag==1):
+				print('app started')
+				flag=0
+		elif(cl=='RASP'):
+			print('rasp came')
+			thread.start_new_thread(rasp_handler,(connection, ))
 
-	print('waiting for first string')
-	cl = str.decode(connection.recv(1024))
-	cl = str(cl)
-	cl=cl.split('_')[0]
-	
-	if(cl=='APP'):
-		thread.start_new_thread(app_handler,(connection, ))
-		print('app started')
-	elif(cl=='RASP'):
-		print('rasp came')
-		thread.start_new_thread(rasp_handler,(connection, ))
+main()
