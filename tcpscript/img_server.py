@@ -41,7 +41,7 @@ curs = conn.cursor()
 
 
 def insert(table,req):
-	print('here insert')
+	print('db insert')
 	#print(req)
 
 	if(str(req[0])=='REGISTER'):
@@ -125,7 +125,7 @@ def history_(connection, req):
 	#print(res)
 	#print(str.encode(res))
 	slen = str(len(res)) +'_'
-	print('slen is ' + slen)
+	#print('slen is ' + slen)
 	connection.send(str.encode(slen))
 
 	connection.recv(100)
@@ -133,7 +133,7 @@ def history_(connection, req):
 	sent =connection.send(str.encode(res))
 	#print(len(res))
 	#print(sent)
-	print('send history done')
+	print('history info sending done')
 
 	pass
 
@@ -242,7 +242,7 @@ def app_handler(connection):
 		connection.send(str.encode("OK_\n\n"))
 
 		req= str.decode(connection.recv(1024))
-		print(req)
+		print('\n'+req)
 		req=req.split('_')
 		rqn = req[0]
 
