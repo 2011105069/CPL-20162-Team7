@@ -34,6 +34,9 @@ x = '{:03d}'.format(i)
 z = '.JPG'
 
 
+
+print(str(i) +'%')
+
 img2= img + '{:03d}'.format(i) + z
 
 #label_image(img2)
@@ -44,5 +47,5 @@ while i<101:
 	ss += label_image(img2)
 	i+=1
 
-
-print(ss)
+print('among ' + str(ss) + ' pictures ' + str(ss)  +' was correct')
+print(str(ss) +'%')
