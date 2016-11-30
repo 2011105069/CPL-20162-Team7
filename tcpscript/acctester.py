@@ -47,5 +47,5 @@ while i<101:
 	ss += label_image(img2)
 	i+=1
 
-print('among ' + str(ss) + ' pictures ' + str(ss)  +' was correct')
+print('among ' + str(i-1) + ' pictures ' + str(ss)  +' was correct')
 print(str(ss) +'%')
