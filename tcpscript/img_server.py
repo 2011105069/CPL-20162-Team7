@@ -145,8 +145,8 @@ def register_(connection, req):
 	print('register : '+ str(req[1]) + ' success')
 
 	#sql = 'insert into member_info (uid,u_name,sex,birth_year,gid) vaules('
-		
-pass
+
+	pass
 
 def login_(connection, req):
 	#nothing todo yet
