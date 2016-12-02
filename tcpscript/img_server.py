@@ -62,15 +62,9 @@ def insert(table,req):
 	pass
 
 def history_(connection, req):
-	tex ='hi im seven\n'
-	#connection.send(str.encode(tex))
-
-	#print('sending done history')
-
-	req[1]='swkim306'
-
+	#date selecton function is not implemented.
+	
 	sql = "select * from history where uid=\""+str(req[1])+ "\" order by date desc"
-
 	curs.execute(sql)
 	rows = curs.fetchall()
 	#print(rows)
@@ -141,12 +135,17 @@ def history_(connection, req):
 #TODO 1118: register, login, databse connection.
 def register_(connection, req):
 	insert('member_info', req)
-	sql= "select * from member_info"
-	curs.execute(sql)
-	rows = curs.fetchall()
+	
 
-	for i in rows:
-		print(i)
+	suid "select uid from member_info where uid =\""+ str(ql=) +"\""	curs.execute(sql)
+
+
+	rows = curs.fetchall()
+	if rows:
+		for i in rows:
+			print(i)
+else:
+	print("no such id " + str(req[1]))
 
 	print('register : '+ str(req[1]) + ' success')
 
@@ -155,9 +154,19 @@ def register_(connection, req):
 
 def login_(connection, req):
 	#nothing todo yet
-	print("login success")
-	print('id : ' + str(req[1]))
-	pass
+
+	uid = req[1]
+	sql= "select uid from member_info where uid =\""+ str(uid) +"\""
+	curs.execute(sql)
+	rows = curs.fetchall()
+
+	if rows:
+		print("login success")
+		print('id : ' + str(req[1]))
+		pass
+	else:
+		print("no such id " + str(req[1]))
+
 
 
 def label_image(img, connection, req):
@@ -268,51 +277,49 @@ def app_handler(connection):
 
 def rasp_login(connection, req):
 	print(req)
-	#gid = 
+	
+	uid = req[1]
+	sql= "select gid from member_info where uid =\""+ str(uid) +"\""
+	curs.execute(sql)
+	rows = curs.fetchall()
 
-	# sql = "select uid, u_name,sex, birth_year  from member_info where gid;"
-	# print('sql is')
-	# print(sql)
-	# curs.execute(sql)
-	# rows = curs.fetchall()
-	pass
-
-
-def rasp_handler(connection):
-	try:
-		
-		connection.send(str.encode("OK_"))
-
-		req= str.decode(connection.recv(1024))
-		print(req)
-		req=req.split('_')
-		rqn = req[0]
-
-		if(rqn=='LOGIN'):
-			print('rasp login')
-			rasp_login(connection, req)
-
-	except:
+	if rows:
+		print("login success")
+		print('id : ' + str(req[1]))
 		pass
+	else:
+		print("no such id " + str(req[1]))
+
+	return int(str(rows[0]))
 
 
+def rasp_history(connection, req, gid):
+	#It may have error.
+	#date selecton function is not implemented.
+	#the amount of data is fixed in raspberyy program.
 
-def rasp_history():
-	sql= "select * from "
-	'''
-	while()
-		sql = "select * from history where uid=\"hean12340302\" order by date desc"
+	sql= "select uid from memeber_info where gid=\"" +str(gid) +"\""
+	curs.execute(sql)
+	rows2 = curs.fetchall()
+
+	totmsg=''
+	
+	for uid in rows2:
+
+		sql = "select * from history where uid=\""+str(uid) + "\" order by date desc"
 		curs.execute(sql)
 		rows = curs.fetchall()
 		#print(rows)
 
 		d=0
 		xx=len(rows)
-		print(len(rows))
+		#print(len(rows))
 
-		print(rows[1])
+		#print(rows[1])
 		d=1
 		date=str(unicode(rows[d][0]))
+
+		res=str()
 
 		while(d<xx):
 			# print(rows[d])
@@ -335,23 +342,68 @@ def rasp_history():
 			for i in rows2[0]:
 				irows.append(float(i))
 
+
 			mrows=list()
 			for i in irows:
-				mrows.append(float("{0:.2f}".format(i*quant)))
+				mrows.append(i*float("{0:.2f}".format(quant)))
 
-
-			print(uid+u+date+u+foodname+u+str(quant)+u,end='')
+			#print(uid+u+date+u+foodname+u+str(quant)+u,end='')
 
 
 			for i in mrows:
-				print(str(i), end='')
-				print('_', end='')
+				#print(str(i), end='')
+				#print('_', end='')
+				res+= str(i) +'_'
 
+			#rasp don't need this '#'' and length of msg.
+			#res+='#'
 			d+=1
-			'''
+
+		#print(res)
+		totmsg = totmsg + res
 
 		
+	sent =connection.send(str.encode(totmsg))
+	#print(len(res))
+	#print(sent)
+	print('history info sending done')
 
+	pass
+			
+
+def rasp_handler(connection, req):
+
+	#After connection firtst req is treated specially. so recv is in finally statement.
+	#Message type is RASP_LOGIN_ID_
+	#RASP_HISTORY_ID_
+
+	gid=0
+
+	while connection:
+		try:
+			
+			connection.send(str.encode("OK_"))
+			
+			print(req)
+			req=req.split('_')
+			rqn = req[0]
+
+			if(rqn=='LOGIN'):
+				print('rasp login')
+				gid = rasp_login(connection, req)
+			if(rqn=='HISTORY'):
+				print('rasp history')
+				rasp_history(connection, req, gid)
+				pass
+
+		except:
+			pass
+
+		finally:
+			req= str.decode(connection.recv(1024))
+			req = req.split('_')[1]
+
+1
 def main():
 	#create a tcp/ip socket.
 	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -374,15 +426,16 @@ def main():
 		
 		cl = str.decode(connection.recv(1024))
 		cl = str(cl)
-		cl=cl.split('_')[0]
+		cl2=cl.split('_')[0]
+		cl3 = cl.split('_')[1]
 		
-		if(cl=='APP'):
+		if(cl2=='APP'):
 			thread.start_new_thread(app_handler,(connection, ))
 			if(flag==1):
 				print('app started')
 				flag=0
-		elif(cl=='RASP'):
+		elif(cl2=='RASP'):
 			print('rasp came')
-			thread.start_new_thread(rasp_handler,(connection, ))
+			thread.start_new_thread(rasp_handler,(connection, cl3, ))
 
 main()
