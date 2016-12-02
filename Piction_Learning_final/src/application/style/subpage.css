@@ -1,0 +1,8 @@
+.root {
+    -fx-background-image: url("/image/group_background.png");
+}
+
+.main_scroll {
+	-fx-background-color: transparent;
+	-fx-border-image-source: url("/image/group_background.png");
+}

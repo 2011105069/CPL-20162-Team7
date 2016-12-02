@@ -1,0 +1,12 @@
+.member_right_grid {
+    -fx-background-image: url("group_background.png");
+}
+
+.popup{
+	-fx-background-image: url("/image/popup.png");
+}
+
+.borderpane{
+	-fx-border-color: white;
+	
+}

@@ -1,0 +1,14 @@
+.root {
+    -fx-background-image: url("/image/popup.png");
+}
+
+.borderpane{
+	-fx-border-color: white;
+	-fx-border-width: 3;
+}
+
+.font{
+	-fx-font-family: 'InterparkGothicMedium.ttf';
+    -fx-font-size: 15;
+    -fx-text-fill: black;
+}

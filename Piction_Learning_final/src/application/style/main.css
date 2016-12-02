@@ -1,0 +1,29 @@
+.root {
+    -fx-background-image: url("/image/group_background.png");
+}
+
+.scrollpane{
+	-fx-background-color: transparent;
+}
+
+.borderpane{
+	-fx-border-color: white;
+	-fx-border-width: 2;
+}
+
+.mygroupborderpane{
+	-fx-border-color: white;
+	-fx-border-width: 0;
+}
+
+.font{
+	-fx-font-family: 'InterparkGothicMedium.ttf';
+    -fx-font-size: 12;
+    -fx-font-weight: bold;
+    -fx-text-fill: black;
+}
+
+.font10{
+	-fx-font-size: 14;
+	-fx-font-weight: bold;
+}
