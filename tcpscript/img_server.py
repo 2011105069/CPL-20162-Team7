@@ -135,22 +135,18 @@ def history_(connection, req):
 #TODO 1118: register, login, databse connection.
 def register_(connection, req):
 	insert('member_info', req)
-	
-
-	suid "select uid from member_info where uid =\""+ str(ql=) +"\""	curs.execute(sql)
-
-
+	sql= "select * from member_info"
+	curs.execute(sql)
 	rows = curs.fetchall()
-	if rows:
-		for i in rows:
-			print(i)
-else:
-	print("no such id " + str(req[1]))
+
+	for i in rows:
+		print(i)
 
 	print('register : '+ str(req[1]) + ' success')
 
 	#sql = 'insert into member_info (uid,u_name,sex,birth_year,gid) vaules('
-	pass
+		
+pass
 
 def login_(connection, req):
 	#nothing todo yet
