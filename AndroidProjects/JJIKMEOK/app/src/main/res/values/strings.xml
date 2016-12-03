@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">찍먹</string>
+    <string name="title_activity_sub_camera">SubActivity_camera</string>
+    <string name="title_activity_sub_09">SubActivity_09</string>
+</resources>
