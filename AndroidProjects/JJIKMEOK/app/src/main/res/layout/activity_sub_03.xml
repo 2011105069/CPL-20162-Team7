@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_sub_03"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@drawable/joinpage"
+    tools:context="com.example.administrator.jjikmeok.SubActivity_03">
+
+
+    <!-- ID text -->
+    <EditText
+        android:layout_width="110dp"
+        android:layout_height="38dp"
+        android:inputType="textPersonName"
+        android:text="ID"
+        android:textColor="#000000"
+        android:ems="10"
+        android:id="@+id/editText_loginid"
+        android:background="@null"
+        android:layout_marginRight="102dp"
+        android:layout_marginEnd="102dp"
+        android:layout_marginTop="230dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <!-- PW text -->
+
+    <!-- Age text -->
+
+
+    <!-- Radio buttons -->
+
+    <!-- join check button -->
+
+
+    <!-- join cancel button -->
+
+    <EditText
+        android:layout_width="110dp"
+        android:layout_height="38dp"
+        android:inputType="textPassword"
+        android:textColor="#000000"
+        android:ems="10"
+        android:id="@+id/editText_loginpw"
+        android:background="@null"
+        android:layout_marginTop="11dp"
+        android:layout_below="@+id/editText_loginid"
+        android:layout_alignLeft="@+id/editText_loginid"
+        android:layout_alignStart="@+id/editText_loginid"
+        android:text="pass" />
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:id="@+id/radioGroup"
+        android:layout_below="@+id/editText_joinage"
+        android:layout_centerHorizontal="true">
+
+        <RadioButton
+            android:id="@+id/rb_man"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:onClick="onClick_88"
+            android:text="           " />
+
+        <RadioButton
+            android:id="@+id/rb_girl"
+            android:layout_width="wrap_content"
+            android:layout_height="46dp"
+            android:onClick="onClick_99"
+            android:text="                 " />
+
+    </RadioGroup>
+
+    <EditText
+        android:layout_width="110dp"
+        android:layout_height="38dp"
+        android:inputType="textPersonName"
+        android:text="1992"
+        android:textColor="#000000"
+        android:ems="10"
+        android:id="@+id/editText_joinage"
+        android:background="@null"
+        android:layout_marginTop="7dp"
+        android:layout_below="@+id/editText_loginpw"
+        android:layout_alignLeft="@+id/editText_loginpw"
+        android:layout_alignStart="@+id/editText_loginpw" />
+
+
+    <Button
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:id="@+id/button7"
+        android:background="#00ff0000"
+        android:onClick="onClick_02"
+        android:layout_marginRight="28dp"
+        android:layout_marginEnd="28dp"
+        android:layout_alignBaseline="@+id/button6"
+        android:layout_alignBottom="@+id/button6"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:id="@+id/button6"
+        android:background="#00ff0000"
+        android:onClick="onClick"
+        android:layout_marginLeft="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginBottom="49dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
+</RelativeLayout>

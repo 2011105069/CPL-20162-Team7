@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@drawable/record_view"
+    tools:context="com.example.administrator.jjikmeok.SubActivity_05">
+
+    <com.github.mikephil.charting.charts.HorizontalBarChart
+        android:id="@+id/chart1"
+        android:layout_width="320dp"
+        android:layout_height="340dp"
+        android:layout_marginBottom="49dp"
+        android:layout_marginLeft="73dp"
+        android:layout_marginStart="73dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
+    <Button
+        android:layout_width="110dp"
+        android:layout_height="40dp"
+        android:background="#00ff0000"
+        android:id="@+id/button3"
+        android:onClick="onClick_12"
+        android:layout_marginLeft="153dp"
+        android:layout_marginStart="153dp"
+        android:layout_marginTop="127dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/chart1"
+        android:layout_alignStart="@+id/chart1" />
+
+    <Button
+        android:layout_width="110dp"
+        android:layout_height="40dp"
+        android:background="#00ff0000"
+        android:id="@+id/button4"
+        android:onClick="onClick_11"
+        android:layout_alignBaseline="@+id/button3"
+        android:layout_alignBottom="@+id/button3"
+        android:layout_centerHorizontal="true" />
+
+
+</RelativeLayout>
