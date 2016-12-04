@@ -80,11 +80,6 @@ def history_(connection, req):
 	res=str()
 
 	while(d<xx):
-		# print(rows[d])
-		# print(str(unicode(rows[0][0])))
-		# print(str(rows[0][1]))
-		# print(str(rows[0][2]))
-		# print(str(rows[0][3]))
 
 		date=str(unicode(rows[d][0]))
 		uid=str(rows[d][1])
@@ -104,9 +99,6 @@ def history_(connection, req):
 		mrows=list()
 		for i in irows:
 			mrows.append(i*float("{0:.2f}".format(quant)))
-
-		#print(uid+u+date+u+foodname+u+str(quant)+u,end='')
-
 
 		for i in mrows:
 			#print(str(i), end='')
@@ -236,12 +228,8 @@ def picture_(connection,req):
 
 
 def app_handler(connection):
-
 	#TODO 11/15 ##### howto Receive string message(?) connection.recv() to string so idendify request string. #######
 	##### implementation while loop for request parser ###########
-
-	#this while loop necessary?
-
 	try:
 		
 		connection.send(str.encode("OK_\n\n"))
@@ -297,7 +285,6 @@ def rasp_history(connection, req, gid):
 	sql= "select uid from memeber_info where gid=\"" +str(gid) +"\""
 	curs.execute(sql)
 	rows2 = curs.fetchall()
-
 	totmsg=''
 	
 	for uid in rows2:
@@ -309,20 +296,13 @@ def rasp_history(connection, req, gid):
 
 		d=0
 		xx=len(rows)
-		#print(len(rows))
 
-		#print(rows[1])
 		d=1
 		date=str(unicode(rows[d][0]))
 
 		res=str()
 
 		while(d<xx):
-			# print(rows[d])
-			# print(str(unicode(rows[0][0])))
-			# print(str(rows[0][1]))
-			# print(str(rows[0][2]))
-			# print(str(rows[0][3]))
 
 			date=str(unicode(rows[d][0]))
 			uid=str(rows[d][1])
@@ -343,9 +323,6 @@ def rasp_history(connection, req, gid):
 			for i in irows:
 				mrows.append(i*float("{0:.2f}".format(quant)))
 
-			#print(uid+u+date+u+foodname+u+str(quant)+u,end='')
-
-
 			for i in mrows:
 				#print(str(i), end='')
 				#print('_', end='')
@@ -355,9 +332,7 @@ def rasp_history(connection, req, gid):
 			#res+='#'
 			d+=1
 
-		#print(res)
 		totmsg = totmsg + res
-
 		
 	sent =connection.send(str.encode(totmsg))
 	#print(len(res))
