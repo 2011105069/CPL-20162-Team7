@@ -108,17 +108,14 @@ def history_(connection, req):
 		res+='#'
 		d+=1
 
-	#print(res)
-	#print(str.encode(res))
 	slen = str(len(res)) +'_'
 	#print('slen is ' + slen)
 	connection.send(str.encode(slen))
-
 	print(str.encode(connection.recv(100)))
 	
 	sent =connection.send(str.encode(res))
 	print(len(res))
-	print(res)
+	#print(res)
 	print('history info sending done')
 
 	pass
